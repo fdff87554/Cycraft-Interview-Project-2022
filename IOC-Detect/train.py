@@ -10,7 +10,7 @@ from torch import nn, optim
 from torch.utils.data import DataLoader
 
 from model.bilstm_crf import BiLSTM_CRF
-from utils.datasets import CTIDatasetForBiLSTMCRF, Data2Idx
+from utils.datasets import CTIDatasetForBiLSTMCRFWithNgram, CTIDatasetForBiLSTMCRF, Data2Idx
 
 
 def train(model: nn.Module, train_loader: DataLoader, test_loader: DataLoader, epochs: int, learning_rate: float,
@@ -80,6 +80,22 @@ def main() -> None:
     N_EPOCHS = 10
     DROPOUT = 0.5
     LEARNING_RATE = 0.001
+    
+    # # Get data path
+    # train_path = '../data/CTI-reports/data/CTI reports/train_data'
+    # test_path = '../data/CTI-reports/data/CTI reports/test_data'
+    
+    # # Get dataset
+    # train_dataset = CTIDatasetForBiLSTMCRFWithNgram(data_path=train_path, 
+    #                                                 max_seq_len=SEQ_LEN,
+    #                                                 n_gram=N_GRAM,
+    #                                                 transforms=Data2Idx,
+    #                                                 target_transforms=Data2Idx)
+    # test_dataset = CTIDatasetForBiLSTMCRFWithNgram(data_path=test_path, 
+    #                                                max_seq_len=SEQ_LEN,
+    #                                                n_gram=N_GRAM,
+    #                                                transforms=Data2Idx,
+    #                                                target_transforms=Data2Idx)
     
     # Load data
     train_data = pd.read_csv(train_path, encoding='utf-8').dropna()
