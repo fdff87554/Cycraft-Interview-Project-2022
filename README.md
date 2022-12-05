@@ -11,6 +11,62 @@ This Repo is for 2022 Cycraft Intern Program Interview Homework.
 ## Datasets
 * [CTI-reports-dataset](https://github.com/nlpai-lab/CTI-reports-dataset)
 
+## Method Summary
+* 此為對論文理解後的模型、方法建立的 Summary
+
+### IOC Detection Methods
+* 我會將論文中的第一個步驟稱為 IOC Detection Methods 的原因是其在做的事情是將敘述中的 IOC 資訊給提取出來。
+* 由於論文希望達到所謂的多粒度 IOC 的 NER 識別，因此針對這個目標我們將從資料前處理到 Model Training 來做準備。
+* 首先先看 Dataset 的資料，從 `CTI-reports-dataset` 中可以發現，數據格式如下，為一個 Word + B-I-O Tag 並利用隔行的方式分句。
+    ```markdown=
+    These	O
+    pipes	O
+    represent	O
+    ...
+    Babar	B-malware.drop
+    installs	O
+    ...
+    APIs	O
+    .	O
+
+    Meaning	O
+    ...
+    ```
+* 並且可以從 `label.vocab` 檔案中看到所有的 Tags 有以下
+    ```markdown=
+    O
+    B-hash
+    B-ip.unknown
+    B-malware.backdoor
+    B-malware.drop
+    ...
+    I-url.cncsvr
+    I-url.normal
+    I-url.unknown
+    ```
+* 一般來說，在做語句分析的過程中，我們本來就會做一些基本了操作來減少數據的影響包含 去除大小寫、去除連接詞 等等操作，而我們這次又會使用到 n-gram model 作為最前面的數據整理，因此在 `utils/datasets.py` 中，我們遵守以下步驟準備我們的訓練資料集，分別是
+    * Text to lower()
+    * Remove stop words of english
+    * split words into 1~3 gram
+    > 這邊會用到 sklearn 套件中的 CountVectorizer 工具來幫忙準備 n-gram dataset
+        * 為了去除大量出現的無意義資料，這邊會把出現頻率最高的 2 成資料去除
+    > 由於 Char level 的 gram data 不確定怎麼準備跟 mapping tag 所以這邊先跳過
+* 而後產生類似下列格式的資料集， `Last week , week , Lotus , Lotus exploited Lotus exploited CVE-2017-0143 ...`, `O O O O O B_attacker O B_attacker O B_attacker O B_vul ...` 並依據這樣的資料去做訓練。
+* **應該是 dataset 的 n-gram data 準備的方式有誤，我的 training loss 在下降，但我的 testing loss 一直在升高，關於這個部分因為沒有正確解決，因此 Dataset 改用舊的 none n-gram 版本**
+    * 在這個版本中，lover 之類的事情都有做，只是字句切分是依照 sequence length 而沒有事先經過 n-gram 提取詞彙關係。
+* 由於資訊中還包含韓文之類的各式語言，對於本次實驗其實可以先限縮希望的語言資訊只有數字跟英文，並針對各式語言做這樣的訓練，可以增加模型的精度。而辨識資料是否是英文的方法可以利用現有的 nlp model 如 `stanza` 來做到，因此在 dataset prepare 的過程中可以先一部過濾。
+
+### IOC Pairing Methods
+* 這邊會稱為 IOC Pairing Methods 的原因是因為在論文中的此步驟主要在於將 IOC 跟 IOC 之間的關聯性形成三元組，並藉由這樣的組別來為接下來的 CTI 事件描繪做前期準備。
+* 在這邊因為不清楚怎麼準備可以提取 paper 中所敘述的三元組的 model，感覺其實要準備的事情有兩個，分別是 Parser 對句子的主從關係做提取之後，專注在 B-I-O tag 中有的資訊自己 link 他的主從關係。
+* 因此我想到可以可能做法就是先利用 `stanza` 這個已經訓練好的 nlp model 對 sentences 提取預設的 NER tags，然後跟 CTI dataset 中的 NER tags 做 merge，由於預設的 NER tags 會有例如人名這種 B-I-O Tag，因此我們可以利用這些資料做到例如 
+    * 資料中有 `B-name` 跟 `B-malware.xxx` 這樣的 tags，可以把目標放在 `attacker-exploit-vulnerability` 並且建立 `B-name exploit B-malware.xxx` 這樣的三元組
+* 那目前遇到的問題卡在 merge NER 的過程中貌似會 drop 掉一些有意義的 B-I-O tag 但不知道怎麼拯救比較合適，另外就是要寫提取上述 example 的三元 relation 比想像中的複雜，而且目前並沒有想到一個很合適的方式準備，因此卡在這個部分並且沒有完整的實作出來，只寫到了 Merge NER tags 的部分。
+* Merge NER tags 的想法就是當原本句子中的 CTI Tag 是 `O` tag 然後 `stanza` 的 NER tags 不是的時候，可以把 NER tags Merge 到 CTI Tag 中，因為原本的 CTI Tag 並沒有所謂的名稱之類的 NER tags，這樣可以更全面地把 sentences 中的資料有意義程度給繪製出來，也更方便我們藉由上述提到的 mapping 的方式來做資料提取。
+
+### IOC Relationships
+* 這部分理論上會 map 到論文中的第三個步驟，也就是繪製出 CTI 事件全貌的部分，目前尚無實作且還沒有實作的想法。
+
 ## Summary of Paper
 * About CTI and IOC.
     * 網路威脅情資 (Cyber Threat Intelligence, CTI) 
