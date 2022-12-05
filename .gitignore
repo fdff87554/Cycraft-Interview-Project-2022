@@ -207,3 +207,5 @@ cython_debug/
 */paper/*
 /tmp
 */tmp/*
+/log
+*/log/*
