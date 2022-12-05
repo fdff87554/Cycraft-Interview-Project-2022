@@ -11,6 +11,13 @@ This Repo is for 2022 Cycraft Intern Program Interview Homework.
 ## Datasets
 * [CTI-reports-dataset](https://github.com/nlpai-lab/CTI-reports-dataset)
 
+## My comment
+* 由於命名實體辨識 (Named Entity Recognition, NER）的出現，其實對於 model 去理解有意義資訊這件事情有很棒的強化了，而這件事情剛好是 Security Message 中很重要的一部份，對於事件跟資訊我們為了要說明給人看，其實在這個過程中已經添加了很多隴言進去，而這樣對於 model 藉由報告來幫我們理解問題是沒有好處的，因此 NER tags 能有效的解決這個問題。
+* 其實從論文中可以看到，就算沒有論文提到的 n-gram 多粒度資料提取之後做 training，其實引入 NER tags 就已經可以在提取 IOC 這件事情上有很不錯的成效了，因此我認為 NER 這件事情本身對 IOC 資訊提取才是大功臣。
+* 而後續的對於 IOC relation 的建立其實作法上我並沒有從 paper 中很理解，大致可以猜想這樣的資訊描繪會有不錯的效果跟意義，但我並沒有很好的理解怎麼實作其中提到的三元資料提取。
+* 後續的資料關聯還有 GCN 則因為沒有實作無法確認其效果。
+* 整體而言對我來說讓我比較有新的知識點的部分就是第一部分的 NER 標註 IOC 來提取的這個部分，我認為光這邊的應用就可以解決跟處理很多 Security Data 的 Detection 或者是 Classification 了，而由於還無法實作整份論文，且相關知識跟經驗的不足，我無法評斷這篇論文的 Methods 有沒有任何可以優化的部份，但看下來感覺很合理且應該理論上效果真的很不錯。
+
 ## Method Summary
 * 此為對論文理解後的模型、方法建立的 Summary
 
