@@ -96,7 +96,7 @@ This Repo is for 2022 Cycraft Intern Program Interview Homework.
     * Extract IOCs - 提取 IOCs: 因為關於 CTI 的敘述中，並不是所有資訊都是非常重要的，因此藉由 B-I-O Tagging Method，可以加速對有意義資訊的提取
         * e.g., *Last week, Lotus exploited CVE-2017-0143 vulnerability to affect a larger number of Vista SP2 and Win7 SP devices in Iran*
             * Extracted IOCs without any relations among them.
-                > ![](https://i.imgur.com/EfuDKy1.png)
+                > ![](./images/ioc-no-relation-example.png)
             * B-I-O Tagging Method.
                 * B-X indicates that the element of type X is located at the beginning of the fragment.
                     > B-X 表示 X 類型的元素位於片段的開頭。
@@ -104,12 +104,12 @@ This Repo is for 2022 Cycraft Intern Program Interview Homework.
                     > I-X 表示屬於 X 類型的元素位於片段的中間。
                 * O represents a non-essential element of other types.
                     > O 代表其他類型的非必要元素。
-                > ![](https://i.imgur.com/LsHmZcJ.png)
+                > ![](./images/ioc-with-biotag-example.png)
     * Relationships between IOCs - IOCs 之間的關聯性: 單一的 IOC 資訊往往無法代表任何意義，例如攻擊者的名稱並不會代表任何東西
         * Syntactic dependency parser (e.g., subject-predicate-object, attributive clause, etc.) to extract associated relationships between IOCs. ($IOC_i$, relation, $IOC_j$)
             * e.g., (*Lotus*, *exploit*, *CVE-2017-0143*), (*CVE-2017-0143*, *affect*, *Vista SP2*), etc.
             * Extracted relational triples can be  incrementally pooled into an HIN to model the interactions among IOCs for depicting a more comprehensive threat landscape.
-                > ![](https://i.imgur.com/a29Z1nD.png)
+                > ![](./images/syntactic-dependency-parser-graph.png)
 
 ### Multi-granular Attention Based IoC Extraction - 基於多粒度注意力的IOC提取
 * 由於我們希望從文本之中提取跟 IOCs 有關的 B-I-O Tag，藉由這些 Tag 來辨識文本中的重要資訊，並於後面步驟做到關聯性建立，因此我們首先要識別文本中的這些 B-I-O Tags。
@@ -138,6 +138,6 @@ This Repo is for 2022 Cycraft Intern Program Interview Homework.
     1. 基於元路徑Pi計算IOC之間的相似度，以生成相應的鄰接矩陣Ai
     2. 通過將IOC的屬性信息嵌入到向量空間中，構造節點Xi的特徵矩陣
     3. 進行圖卷積 $GCN(Ai，Xi)$，通過遵循元路徑Pi量化IOC之間的相互依賴關係，將其嵌入到低維空間中
-    > ![](https://i.imgur.com/dZ4T5r0.png)
+    > ![](./images/meta-paths.png)
 * 關於上述部分，因為時間上的關係，並沒有實際做到更深入的理解跟實作，但就想像中而言，因為 meta-path 的建立過程中，其實已經將事件的關聯性描繪得蠻仔細的了，而且相近的資料描述，會因為其建構的 meta-path 讓其特徵近似，因此可以想像 IOCs 之間的特徵相比零散的 IOC 會強烈很多，也可以理解這樣的 GCN 效果應該會很不錯。
 * 而就我自己的理解，這一部的效果會很不錯是必然的，甚至可以說就算沒有這一步驟，頂多就是不好描繪整個 CTI 事件的全貌，但由於前面對於 IOC 資料的提取已經非常強大（第一個 method 如果可以正確地在"敘述"中精準的提取 IOC Tags，其實就已經能夠幫資安人員釐清很多資訊了，而第二部的 relation pair 的建立更是已經可以描繪很多 IOC 資訊之間的關聯，最後這個步驟更像是必然的因為資訊很明確，因此很好計算資料之間的相似性。
